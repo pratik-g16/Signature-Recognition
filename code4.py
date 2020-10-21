@@ -4,8 +4,11 @@ Created on Tue Oct 20 22:21:05 2020
 
 @author: HP
 """
+import PIL
+from PIL import Image
 import numpy as np
 import cv2
+# import pillow
 image1 = cv2.imread("sign.jpeg")
 # cv2.imshow("IMAGE",image1)
 
@@ -89,19 +92,51 @@ cv2.imwrite('result2.png', result2)
 cv2.imwrite('ROI2.png', ROI2)
 
 
-if(ROI1.shape>ROI2.shape):
-    smaller=ROI2
-else:
-    smaller=ROI1
-width=smaller.shape[1]
-height=smaller.shape[2]
-imgResize1=cv2.resize(ROI1,(width,height))
-imgResize2=cv2.resize(ROI2,(width,height))
-
-
+#Compression of image
 imgResize1=cv2.resize(ROI1,(100,100))
 imgResize2=cv2.resize(ROI2,(100,100))
-cv2.imshow("RESIZE1",imgResize1)
-cv2.imshow("RESIZE2",imgResize2)
+
+print(ROI1.shape)
+print(ROI2.shape)
+
+scale_percent=0.05
+width=int(ROI1.shape[1]*scale_percent)
+height=int(ROI1.shape[0]*scale_percent)
+dimention=(width,height)
+resized1=cv2.resize(ROI1,dimention,interpolation=cv2.INTER_AREA)
+resized2=cv2.resize(ROI1,dimention,interpolation=cv2.INTER_AREA)
+# print(resized1.shape)
+# cv2.imwrite('Small.jpg',resized1)
+
+# cv2.imshow('SMALL2',resized1)
+
+
+# if(ROI1.shape>ROI2.shape):
+#     smaller=ROI2
+# else:
+#     smaller=ROI1
+# width=smaller.shape[1]
+# height=smaller.shape[0]
+# print(height,width)
+# imgResize1=ROI1.resize((width,height),PIL.Image.ANTIALIAS)
+# imgResize2=ROI2.resize((width,height),PIL.Image.ANTIALIAS)
+# imgResize1.save("RESIZE1.jpeg")
+# imgResize1.save("RESIZE2.jpeg")
+
+
+
+# imgResize1=cv2.resize(ROI1,(100,100))
+# imgResize2=cv2.resize(ROI2,(100,100))
+# cv2.imshow("RESIZE1",imgResize1)
+# cv2.imshow("RESIZE2",imgResize2)
+
 cv2.waitKey()
+
+ 
+# #compression
+# print("Starting compresion")
+# ROI1f1=ROI1("Compressed_1",optimize=True,quality=10)
+# ROI2f2=ROI2("Compressed_2",optimize=True,quality=10)
+#ROI1.save("Compressed_1","JPEG",optimize = True,quality = 10) 
+
 
