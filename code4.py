@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Oct 23 09:44:40 2020
+
+@author: HP
+"""
+# -- coding: utf-8 --
+"""
 Created on Tue Oct 20 22:21:05 2020
 
 @author: HP
 """
-import PIL
-from PIL import Image
+
 import numpy as np
 import cv2
 # import pillow
@@ -91,20 +96,25 @@ cv2.rectangle(result2, (left,top), (right,bottom), (36, 255, 12), 2)
 cv2.imwrite('result2.png', result2)
 cv2.imwrite('ROI2.png', ROI2)
 
-
+cv2.imshow("1",ROI1)
+cv2.imshow("2",ROI2)
 #Compression of image
 imgResize1=cv2.resize(ROI1,(100,100))
 imgResize2=cv2.resize(ROI2,(100,100))
-
-print(ROI1.shape)
-print(ROI2.shape)
+cv2.imshow("1",imgResize1)
+cv2.imshow("2",imgResize2)
+# print(ROI1.shape)
+# print(ROI2.shape)
 
 scale_percent=0.05
 width=int(ROI1.shape[1]*scale_percent)
 height=int(ROI1.shape[0]*scale_percent)
 dimention=(width,height)
-resized1=cv2.resize(ROI1,dimention,interpolation=cv2.INTER_AREA)
-resized2=cv2.resize(ROI1,dimention,interpolation=cv2.INTER_AREA)
+resized1=cv2.resize(imgResize1,dimention,interpolation=cv2.INTER_AREA)
+resized2=cv2.resize(imgResize2,dimention,interpolation=cv2.INTER_AREA)
+
+cv2.imshow("1",resized1)
+cv2.imshow("2",resized2)
 # print(resized1.shape)
 # cv2.imwrite('Small.jpg',resized1)
 
@@ -139,4 +149,100 @@ cv2.waitKey()
 # ROI2f2=ROI2("Compressed_2",optimize=True,quality=10)
 #ROI1.save("Compressed_1","JPEG",optimize = True,quality = 10) 
 
+# #LCS CODE
+#converting image1 to a flat array
+img1=resized1
+arr1=np.array(img1)
+shape1=arr1.shape
+flat_arr1=arr1.ravel()
 
+#converting image 2 to a flat array
+img2=resized2
+arr2=np.array(img2)
+shape2=arr2.shape
+flat_arr2=arr2.ravel()
+
+#print(flat_arr1)
+#print(flat_arr2)
+
+#vector1=np.matrix(flat_arr1)
+#vector2=np.matrix(flat_arr2)
+
+#print(vector1)
+#print(vector1.shape)
+#print(vector2)
+#print(vector2.shape)
+
+print("Length of image 1 in array is ",str(len(flat_arr1)))
+print("Length of image 2 in array is ",str(len(flat_arr2)))
+
+#print("Length of image 1 in vector is ",str(len(vector1)))
+#print("Length of image 2 in vector is ",str(len(vector2)))
+
+def lcs_length_calculation(x,y):
+    m=len(x)+1
+    n=len(y)+1
+    c=[[0]*n]*m
+    b=[['' for i in range(n)] for j in range(m)]
+    count=0
+    for i in range(m):
+        c[i][0]=0
+        b[i][0]='H'
+    for j in range(n):
+        c[0][j]=0
+        b[0][j]='H'
+    x.insert(0,0)
+    y.insert(0,0)
+    
+    for i in range(1,m):
+        for j in range(1,n):
+            if x[i]==y[j]:
+                c[i][j]=c[i-1][j-1]+1
+                b[i][j]='D'
+                count=count+1
+            else:
+                if c[i-1][j] >= c[i][j-1] :
+                    c[i][j]=c[i-1][j]
+                    b[i][j]='U'
+                else :
+                    c[i][j]=c[i][j-1]
+                    b[i][j]='L'
+                    
+    return (c,b,count)
+
+def lcs_print_seq(b,x,i,j,l):
+    if i==0 or j==0:
+        return
+    if b[i][j]=='D':
+        lcs_print_seq(b,x,i-1,j-1,l)
+        l.append(x[i])
+    elif b[i][j]=='U':
+        lcs_print_seq(b,x,i-1,j,l)
+    else:
+        lcs_print_seq(b,x,i,j-1,l)
+       
+list_arr1=flat_arr1.tolist()
+list_arr2=flat_arr2.tolist()
+c,b,count=lcs_length_calculation(list_arr1,list_arr2);
+#print(c)
+#print(b)
+l=[]
+lcs_print_seq(b,list_arr1,len(list_arr1)-1,len(list_arr2)-1,l)
+print()
+# print("longest Common Subsequence is : ",l)
+print()
+print("Length of longest Common Subsequence is : ",len(l))
+
+print("The 2 images are "+str(    len(l)/len(flat_arr1) *100    )+"% same" )
+
+"""
+x=[1,2,3,4,5]
+y=[1,3,5,7]
+c,b,count=lcs_length_calculation(x,y);
+#print(c)
+#print(b)
+l2=[]
+lcs_print_seq(b,x,len(x)-1,len(y)-1,l2)
+print(l2)
+
+"""
