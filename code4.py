@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Oct 23 09:44:40 2020
-
-@author: HP
-"""
-# -- coding: utf-8 --
-"""
 Created on Tue Oct 20 22:21:05 2020
 
 @author: HP
@@ -13,17 +7,25 @@ Created on Tue Oct 20 22:21:05 2020
 
 import numpy as np
 import cv2
-# import pillow
-image1 = cv2.imread("sign.jpeg")
-# cv2.imshow("IMAGE",image1)
 
+
+#lets us print the complete array without truncation
+#np.set_printoptions(threshold=sys.maxsize)
+
+#---------------------------input----------------------------------
+
+#taking an image
+image1 = cv2.imread("niraj2.jpeg")
 result1 = image1.copy()
+
+#--------------------detecting and cropping signature 1---------------------
+
+#converting image from bgr to hsv 
 image1 = cv2.cvtColor(image1, cv2.COLOR_BGR2HSV)
 lower = np.array([90, 38, 0])
 upper = np.array([145, 255, 255])
+#converting the hsv image to a mask(Removes paper lining,if any)
 mask1 = cv2.inRange(image1, lower, upper)
-#image in black and white
-# cv2.imshow("MASK1",mask1)
 
 kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
 opening1 = cv2.morphologyEx(mask1, cv2.MORPH_OPEN, kernel1, iterations=1)
@@ -46,27 +48,17 @@ bottom = np.max(boxes[:,3])
 result1[close1==0] = (255,255,255)
 ROI1= result1[top:bottom, left:right].copy()
 cv2.rectangle(result1, (left,top), (right,bottom), (36, 255, 12), 2)
-
-# cv2.imshow('result', result1)
-# cv2.imshow('ROI', ROI1)
-# cv2.imshow('close', close1)
-cv2.imwrite('result.png', result1)
-cv2.imwrite('ROI.png', ROI1)
 cv2.waitKey()
 
+#--------------------detecting and cropping signature 2---------------------
 
-
-
-image2 = cv2.imread("sign.jpeg")
-# cv2.imshow("IMAGE",image2)
-
+#image 2
+image2 = cv2.imread("niraj1.jpeg")
 result2 = image2.copy()
 image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2HSV)
 lower = np.array([90, 38, 0])
 upper = np.array([145, 255, 255])
 mask2 = cv2.inRange(image2, lower, upper)
-#image in black and white
-# cv2.imshow("MASK2",mask2)
 
 kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
 opening2 = cv2.morphologyEx(mask2, cv2.MORPH_OPEN, kernel2, iterations=1)
@@ -90,22 +82,17 @@ result2[close2==0] = (255,255,255)
 ROI2 = result2[top:bottom, left:right].copy()
 cv2.rectangle(result2, (left,top), (right,bottom), (36, 255, 12), 2)
 
-# cv2.imshow('result2', result2)
-# cv2.imshow('ROI2', ROI2)
-# cv2.imshow('close2', close2)
-cv2.imwrite('result2.png', result2)
-cv2.imwrite('ROI2.png', ROI2)
+#convert bgr to gray for smaller and more accurate array
+ROI1=cv2.cvtColor(ROI1,cv2.COLOR_BGR2GRAY)
+ROI2=cv2.cvtColor(ROI2,cv2.COLOR_BGR2GRAY)
 
-cv2.imshow("1",ROI1)
-cv2.imshow("2",ROI2)
-#Compression of image
+#----------------------------Compressing image-------------------------------
+
+#Resize to same height and width first
 imgResize1=cv2.resize(ROI1,(100,100))
 imgResize2=cv2.resize(ROI2,(100,100))
-cv2.imshow("1",imgResize1)
-cv2.imshow("2",imgResize2)
-# print(ROI1.shape)
-# print(ROI2.shape)
 
+#changing image quality according to scale_percent
 scale_percent=0.05
 width=int(ROI1.shape[1]*scale_percent)
 height=int(ROI1.shape[0]*scale_percent)
@@ -113,43 +100,10 @@ dimention=(width,height)
 resized1=cv2.resize(imgResize1,dimention,interpolation=cv2.INTER_AREA)
 resized2=cv2.resize(imgResize2,dimention,interpolation=cv2.INTER_AREA)
 
-cv2.imshow("1",resized1)
-cv2.imshow("2",resized2)
-# print(resized1.shape)
-# cv2.imwrite('Small.jpg',resized1)
-
-# cv2.imshow('SMALL2',resized1)
-
-
-# if(ROI1.shape>ROI2.shape):
-#     smaller=ROI2
-# else:
-#     smaller=ROI1
-# width=smaller.shape[1]
-# height=smaller.shape[0]
-# print(height,width)
-# imgResize1=ROI1.resize((width,height),PIL.Image.ANTIALIAS)
-# imgResize2=ROI2.resize((width,height),PIL.Image.ANTIALIAS)
-# imgResize1.save("RESIZE1.jpeg")
-# imgResize1.save("RESIZE2.jpeg")
-
-
-
-# imgResize1=cv2.resize(ROI1,(100,100))
-# imgResize2=cv2.resize(ROI2,(100,100))
-# cv2.imshow("RESIZE1",imgResize1)
-# cv2.imshow("RESIZE2",imgResize2)
-
 cv2.waitKey()
 
- 
-# #compression
-# print("Starting compresion")
-# ROI1f1=ROI1("Compressed_1",optimize=True,quality=10)
-# ROI2f2=ROI2("Compressed_2",optimize=True,quality=10)
-#ROI1.save("Compressed_1","JPEG",optimize = True,quality = 10) 
 
-# #LCS CODE
+#-----------------------------image to array-----------------------------
 #converting image1 to a flat array
 img1=resized1
 arr1=np.array(img1)
@@ -160,24 +114,31 @@ flat_arr1=arr1.ravel()
 img2=resized2
 arr2=np.array(img2)
 shape2=arr2.shape
-flat_arr2=arr2.ravel()
+flat_arr2=arr2.ravel() 
 
-#print(flat_arr1)
-#print(flat_arr2)
 
-#vector1=np.matrix(flat_arr1)
-#vector2=np.matrix(flat_arr2)
+#--------------------------1-d array to pixel array--------------------------
 
-#print(vector1)
-#print(vector1.shape)
-#print(vector2)
-#print(vector2.shape)
+#taking all the indices for gray and black pixels from flat_arr1,flat_arr2
 
-print("Length of image 1 in array is ",str(len(flat_arr1)))
-print("Length of image 2 in array is ",str(len(flat_arr2)))
+a=[]
+for i in range(0,len(flat_arr1)):
+    if(flat_arr1[i]!=255):
+        a.append(i)
+    
+b=[]
+for i in range(0,len(flat_arr2)):
+    if(flat_arr2[i]!=255):
+        b.append(i)
+flat_arr1=a
+flat_arr2=b
+# print(a)
+# print(b)
 
-#print("Length of image 1 in vector is ",str(len(vector1)))
-#print("Length of image 2 in vector is ",str(len(vector2)))
+#---------------------------------LCS Code-------------------------------------
+
+# print("Length of image 1 in array is ",str(len(flat_arr1)))
+# print("Length of image 2 in array is ",str(len(flat_arr2)))
 
 def lcs_length_calculation(x,y):
     m=len(x)+1
@@ -220,29 +181,24 @@ def lcs_print_seq(b,x,i,j,l):
         lcs_print_seq(b,x,i-1,j,l)
     else:
         lcs_print_seq(b,x,i,j-1,l)
-       
-list_arr1=flat_arr1.tolist()
-list_arr2=flat_arr2.tolist()
+list_arr1=a
+list_arr2=b
 c,b,count=lcs_length_calculation(list_arr1,list_arr2);
-#print(c)
-#print(b)
 l=[]
 lcs_print_seq(b,list_arr1,len(list_arr1)-1,len(list_arr2)-1,l)
 print()
-# print("longest Common Subsequence is : ",l)
 print()
-print("Length of longest Common Subsequence is : ",len(l))
 
-print("The 2 images are "+str(    len(l)/len(flat_arr1) *100    )+"% same" )
+#----------------------------printing output--------------------------------
 
-"""
-x=[1,2,3,4,5]
-y=[1,3,5,7]
-c,b,count=lcs_length_calculation(x,y);
-#print(c)
-#print(b)
-l2=[]
-lcs_print_seq(b,x,len(x)-1,len(y)-1,l2)
-print(l2)
+# print("Length of longest Common Subsequence is : ",len(l))
 
-"""
+# print("The 2 images are "+str(    len(l)/len(flat_arr1) *100    )+"% same" )
+
+print("The 2 images are "+str(  "{:.2f}".format(  2*len(l)/(len(flat_arr1)+len(flat_arr2)) *100   ) )+"% same" )
+
+
+
+
+
+
