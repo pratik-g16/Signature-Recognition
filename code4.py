@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -- coding: utf-8 --
 """
 Created on Tue Oct 20 22:21:05 2020
 
@@ -15,7 +15,7 @@ import cv2
 #---------------------------input----------------------------------
 
 #taking an image
-image1 = cv2.imread("niraj2.jpeg")
+image1 = cv2.imread("niraj1.jpeg")
 result1 = image1.copy()
 
 #--------------------detecting and cropping signature 1---------------------
@@ -53,7 +53,7 @@ cv2.waitKey()
 #--------------------detecting and cropping signature 2---------------------
 
 #image 2
-image2 = cv2.imread("niraj1.jpeg")
+image2 = cv2.imread("niraj2.jpeg")
 result2 = image2.copy()
 image2 = cv2.cvtColor(image2, cv2.COLOR_BGR2HSV)
 lower = np.array([90, 38, 0])
@@ -86,6 +86,19 @@ cv2.rectangle(result2, (left,top), (right,bottom), (36, 255, 12), 2)
 ROI1=cv2.cvtColor(ROI1,cv2.COLOR_BGR2GRAY)
 ROI2=cv2.cvtColor(ROI2,cv2.COLOR_BGR2GRAY)
 
+
+#-------------------------Image printing------------------------------
+#mask
+cv2.imshow("MASK1",mask1)
+cv2.imshow("MASK2",mask2)
+
+#image while cropping
+cv2.imshow("RESULT1",result1)
+cv2.imshow("RESULT2",result2)
+
+#cropped image
+cv2.imshow("ROI1",ROI1)
+cv2.imshow("ROI2",ROI2)
 #----------------------------Compressing image-------------------------------
 
 #Resize to same height and width first
@@ -192,13 +205,7 @@ print()
 #----------------------------printing output--------------------------------
 
 # print("Length of longest Common Subsequence is : ",len(l))
-
-# print("The 2 images are "+str(    len(l)/len(flat_arr1) *100    )+"% same" )
-
-print("The 2 images are "+str(  "{:.2f}".format(  2*len(l)/(len(flat_arr1)+len(flat_arr2)) *100   ) )+"% same" )
-
-
-
-
-
-
+if(len(flat_arr1)== len(flat_arr2)):
+    print("The 2 images are "+str(    len(l)/len(flat_arr1) *100    )+"% same" )
+else:
+    print("The 2 images are "+str(  "{:.2f}".format(  2*len(l)/(len(flat_arr1)+len(flat_arr2)) *100   ) )+"% same" )
