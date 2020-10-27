@@ -24,27 +24,34 @@ result1 = image1.copy()
 image1 = cv2.cvtColor(image1, cv2.COLOR_BGR2HSV)
 lower = np.array([90, 38, 0])
 upper = np.array([145, 255, 255])
-#converting the hsv image to a mask(Removes paper lining,if any)
+#converting the hsv image to a mask(threshold)
 mask1 = cv2.inRange(image1, lower, upper)
 
+#removing noise
 kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+#using opening
 opening1 = cv2.morphologyEx(mask1, cv2.MORPH_OPEN, kernel1, iterations=1)
+#using closing
 close1 = cv2.morphologyEx(opening1, cv2.MORPH_CLOSE, kernel1, iterations=2)
 
+#finding a curve joining all continuous points
 cnts = cv2.findContours(close1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
 boxes = []
 for c in cnts:
+    #using cv2.boundingRect to highlight the area of use from contours
     (x, y, w, h) = cv2.boundingRect(c)
     boxes.append([x,y, x+w,y+h])
 
+#finding top,left,right and bottom most coordinates of the signature
 boxes = np.asarray(boxes)
 left = np.min(boxes[:,0])
 top = np.min(boxes[:,1])
 right = np.max(boxes[:,2])
 bottom = np.max(boxes[:,3])
 
+#cropping image
 result1[close1==0] = (255,255,255)
 ROI1= result1[top:bottom, left:right].copy()
 cv2.rectangle(result1, (left,top), (right,bottom), (36, 255, 12), 2)
@@ -107,9 +114,11 @@ imgResize2=cv2.resize(ROI2,(100,100))
 
 #changing image quality according to scale_percent
 scale_percent=0.05
+#from shape array get height and width
 width=int(ROI1.shape[1]*scale_percent)
 height=int(ROI1.shape[0]*scale_percent)
 dimention=(width,height)
+#using interpolation technique-interarea to resize
 resized1=cv2.resize(imgResize1,dimention,interpolation=cv2.INTER_AREA)
 resized2=cv2.resize(imgResize2,dimention,interpolation=cv2.INTER_AREA)
 
