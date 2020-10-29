@@ -4,8 +4,13 @@ Name of the Students :
 1.	Monica Dholwani  (Roll No - 16)
 2.	Niraj Varma (Roll No – 60)
 3.	Pratik Gupta (Roll No – 65)
+
+
+
 Status :
 Completed
+
+
 Brief description of project :
 	The aim of our project is to recognize the similarity between the given signs. 
 We are using the lcs approach to find the similarities between the given signs. 
